@@ -4,10 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Labyrinth of Minos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 
+    <div id="game-container">
+    <div id="start-screen" class="overlay">
+        <h1 class="title">LABYRINTH OF MINOS</h1>
+        <p class="mb-10 text-lg italic text-amber-100/60 font-light">The sun is high, but the depths are cold.</p>
+        <button class="btn-start" onclick="startGame()">Begin the Ascent</button>
+        <div class="instructions">
+            <p>Move: <span class="text-amber-500">Arrows / WASD</span> &nbsp; | &nbsp; Jump: <span class="text-amber-500">Space / Up</span></p>
+        </div>
+    </div>
+
+    <div id="game-ui" class="absolute top-6 left-6 z-20 pointer-events-none hidden">
+        <div class="text-[#d4af37] text-2xl font-serif tracking-widest opacity-80">ICARUS</div>
+        <div id="distance-meter" class="text-white/40 text-sm mt-1">DEPTH: 0m</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+</div>
 
     <script src="index.js"></script>
     
