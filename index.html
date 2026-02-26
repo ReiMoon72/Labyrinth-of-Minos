@@ -8,23 +8,67 @@
 </head>
 <body>
 
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
 
-    <div id="game-container">
+    <!-- UI Layer -->
+    <div id="ui-layer" class="hidden">
+        <div class="flex flex-col gap-2">
+            <div id="health-bar" class="flex">
+                <span class="heart">❤</span>
+                <span class="heart">❤</span>
+                <span class="heart">❤</span>
+            </div>
+            <button class="pause-btn" onclick="togglePause()">PAUSE [P]</button>
+        </div>
+        <div class="timer" id="timerDisplay">00:00</div>
+    </div>
+
+    <!-- Start Screen -->
     <div id="start-screen" class="overlay">
-        <h1 class="title">LABYRINTH OF MINOS</h1>
-        <p class="mb-10 text-lg italic text-amber-100/60 font-light">The sun is high, but the depths are cold.</p>
-        <button class="btn-start" onclick="startGame()">Begin the Ascent</button>
-        <div class="instructions">
-            <p>Move: <span class="text-amber-500">Arrows / WASD</span> &nbsp; | &nbsp; Jump: <span class="text-amber-500">Space / Up</span></p>
+        <h1>LABYRINTH OF MINOS</h1>
+        <button class="btn" onclick="startGame()">ENTER THE MAZE</button>
+        <button class="btn" onclick="showPanel('tutorial')">HOW TO SURVIVE</button>
+        <button class="btn" onclick="showPanel('settings')">SETTINGS</button>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-menu" class="overlay hidden">
+        <div class="panel">
+            <h2 class="text-4xl font-bold mb-6 font-serif">PAUSED</h2>
+            <button class="btn" onclick="togglePause()">RESUME</button>
+            <button class="btn" onclick="resetGame()">RESET LEVEL</button>
+            <button class="btn" onclick="showPanel('settings')">SETTINGS</button>
+            <button class="btn" onclick="returnToMenu()">MAIN MENU</button>
         </div>
     </div>
 
-    <div id="game-ui" class="absolute top-6 left-6 z-20 pointer-events-none hidden">
-        <div class="text-[#d4af37] text-2xl font-serif tracking-widest opacity-80">ICARUS</div>
-        <div id="distance-meter" class="text-white/40 text-sm mt-1">DEPTH: 0m</div>
+    <!-- Tutorial Panel -->
+    <div id="tutorial" class="overlay hidden">
+        <div class="panel">
+            <h2 class="text-3xl mb-4 font-bold">THE FLIGHT OF ICARUS</h2>
+            <ul class="text-left space-y-3 mb-6">
+                <li><span class="text-white font-bold">[W]</span> - Walk Forward (Right)</li>
+                <li><span class="text-white font-bold">[A]</span> - Walk Backward (Left)</li>
+                <li><span class="text-white font-bold">[SPACE]</span> - Flap Wings (Jump)</li>
+                <li><span class="text-white font-bold">[SHIFT]</span> - Sprint</li>
+                <li><span class="text-white font-bold">[P]</span> - Pause Game</li>
+            </ul>
+            <button class="btn" onclick="hidePanels()">BACK</button>
+        </div>
     </div>
 
-    <canvas id="gameCanvas"></canvas>
+    <!-- Settings Panel -->
+    <div id="settings" class="overlay hidden">
+        <div class="panel">
+            <h2 class="text-3xl mb-4 font-bold">SETTINGS</h2>
+            <div class="mb-6">
+                <label class="block mb-2">MASTER VOLUME</label>
+                <input type="range" class="w-full accent-[#e2c08d]">
+            </div>
+            <button class="btn" onclick="hidePanels()">SAVE & BACK</button>
+        </div>
+    </div>
 </div>
 
     <script src="index.js"></script>
