@@ -1,5 +1,4 @@
-   /* JavaScript Variables */
-    const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const uiLayer = document.getElementById('ui-layer');
     const timerDisplay = document.getElementById('timerDisplay');
@@ -10,36 +9,46 @@
     const processCanvas = document.createElement('canvas');
     const pCtx = processCanvas.getContext('2d', { willReadFrequently: true });
 
-    /* IMAGE ASSETS SETUP */
-    const charImg = new Image();
-    charImg.src = 'icarus.jpg'; // Your sprite sheet image
+    /* IMAGE ASSETS SETUP - Arrays for individual frame files */
+    // Edit these arrays with your actual filenames
+    const walkFiles = ['idle.JPG', 'idle2.JPG'];
+    const runFiles = ['4run.JPG', '5run.JPG', '6run.JPG', '7run.JPG', '7run.JPG', '6run.JPG', '5run.JPG', '4run.JPG', '3run.JPG', '2run.JPG', '1run.JPG'];
+    
+    const walkImages = [];
+    const runImages = [];
+    const processedWalkImages = [];
+    const processedRunImages = [];
 
     const bgImg = new Image();
-    bgImg.src = 'background.jpg';
-
-    // Animation Settings
-    const spriteConfig = {
-        frames: 4,      // Number of horizontal frames in your image
-        currentFrame: 0,
-        animCounter: 0,
-        animSpeed: 8    // Lower is faster
-    };
-
-    // Flags to check if images loaded successfully
-    let charLoaded = false;
+    bgImg.src = 'Plain-Map.JPG';
     let bgLoaded = false;
-    let processedCharImg = null;
-
-    charImg.onload = () => {
-        removeWhiteBackground();
-        charLoaded = true;
-    };
     bgImg.onload = () => bgLoaded = true;
 
-    function removeWhiteBackground() {
-        processCanvas.width = charImg.width;
-        processCanvas.height = charImg.height;
-        pCtx.drawImage(charImg, 0, 0);
+    // Load and process all individual walking frames
+    walkFiles.forEach((src, index) => {
+        const img = new Image();
+        img.src = src;
+        walkImages.push(img);
+        img.onload = () => {
+            processedWalkImages[index] = removeWhiteBackground(img);
+        };
+    });
+
+    // Load and process all individual running frames
+    runFiles.forEach((src, index) => {
+        const img = new Image();
+        img.src = src;
+        runImages.push(img);
+        img.onload = () => {
+            processedRunImages[index] = removeWhiteBackground(img);
+        };
+    });
+
+    function removeWhiteBackground(imgSource) {
+        processCanvas.width = imgSource.width;
+        processCanvas.height = imgSource.height;
+        pCtx.clearRect(0, 0, processCanvas.width, processCanvas.height);
+        pCtx.drawImage(imgSource, 0, 0);
         
         const imageData = pCtx.getImageData(0, 0, processCanvas.width, processCanvas.height);
         const data = imageData.data;
@@ -48,17 +57,24 @@
             const r = data[i];
             const g = data[i + 1];
             const b = data[i + 2];
-            if (r > 240 && g > 240 && b > 240) {
+            if (r > 235 && g > 235 && b > 235) {
                 data[i + 3] = 0; 
             }
         }
         
         pCtx.putImageData(imageData, 0, 0);
-        processedCharImg = new Image();
-        processedCharImg.src = processCanvas.toDataURL();
+        const result = new Image();
+        result.src = processCanvas.toDataURL();
+        return result;
     }
 
-    // Game State
+    // Animation Settings
+    const spriteConfig = {
+        currentFrame: 0,
+        animCounter: 0,
+        animSpeed: 8    
+    };
+
     let gameState = 'menu';
     let isPaused = false;
     let startTime = 0;
@@ -66,7 +82,6 @@
     let pausedTime = 0;
     let lives = 3;
 
-    // Player Configuration
     const player = {
         x: 100,
         y: 0,
@@ -79,7 +94,8 @@
         velY: 0,
         grounded: false,
         direction: 1,
-        isMoving: false
+        isMoving: false,
+        isSprinting: false
     };
 
     const gravity = 0.6;
@@ -182,13 +198,13 @@
         if (gameState !== 'playing' || isPaused) return;
 
         let currentSpeed = player.speed;
-        let isSprinting = keys['ShiftLeft'] || keys['ShiftRight'];
+        player.isSprinting = keys['ShiftLeft'] || keys['ShiftRight'];
         
-        if (isSprinting) {
+        if (player.isSprinting) {
             currentSpeed *= player.sprintMultiplier;
-            spriteConfig.animSpeed = 4; // Fast animation for sprinting
+            spriteConfig.animSpeed = 5; 
         } else {
-            spriteConfig.animSpeed = 8; // Normal speed
+            spriteConfig.animSpeed = 9; 
         }
 
         player.isMoving = false;
@@ -203,15 +219,17 @@
             player.isMoving = true;
         }
 
-        // Handle Animation Frames
+        // Cycle through individual frame files
         if (player.isMoving && player.grounded) {
             spriteConfig.animCounter++;
+            const totalFrames = player.isSprinting ? runFiles.length : walkFiles.length;
+            
             if (spriteConfig.animCounter >= spriteConfig.animSpeed) {
-                spriteConfig.currentFrame = (spriteConfig.currentFrame + 1) % spriteConfig.frames;
+                spriteConfig.currentFrame = (spriteConfig.currentFrame + 1) % totalFrames;
                 spriteConfig.animCounter = 0;
             }
         } else if (!player.isMoving) {
-            spriteConfig.currentFrame = 0; // Reset to idle frame
+            spriteConfig.currentFrame = 0; 
         }
 
         if (keys['Space'] && player.grounded) {
@@ -247,7 +265,6 @@
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        /* DRAW BACKGROUND */
         if (bgLoaded) {
             ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
         } else {
@@ -258,7 +275,6 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        /* DRAW PLATFORMS */
         ctx.fillStyle = '#332211';
         platforms.forEach(plat => {
             ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
@@ -267,7 +283,7 @@
             ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
         });
 
-        /* DRAW PLAYER */
+        /* DRAW PLAYER USING INDIVIDUAL FRAME IMAGE */
         ctx.save();
         ctx.translate(player.x + player.width/2, player.y + player.height/2);
         
@@ -275,22 +291,19 @@
             ctx.scale(-1, 1);
         }
 
-        if (processedCharImg && processedCharImg.complete) {
-            // Source Dimensions (assumes frames are laid out horizontally)
-            const sWidth = charImg.width / spriteConfig.frames;
-            const sHeight = charImg.height;
-            const sx = spriteConfig.currentFrame * sWidth;
-            
+        // Get the current processed frame from the correct array
+        const currentArray = player.isSprinting ? processedRunImages : processedWalkImages;
+        const currentFrameImg = currentArray[spriteConfig.currentFrame];
+
+        if (currentFrameImg && currentFrameImg.complete) {
             ctx.drawImage(
-                processedCharImg, 
-                sx, 0, sWidth, sHeight,           // Source rectangle
-                -player.width/2, -player.height/2, // Destination x,y (centered)
-                player.width, player.height       // Destination size
+                currentFrameImg, 
+                -player.width/2, -player.height/2, 
+                player.width, player.height       
             );
-        } else if (charLoaded) {
-            ctx.drawImage(charImg, -player.width/2, -player.height/2, player.width, player.height);
         } else {
-            ctx.fillStyle = '#e2c08d';
+            // Placeholder while images are loading/processing
+            ctx.fillStyle = player.isSprinting ? '#ff4d4d' : '#e2c08d';
             ctx.fillRect(-player.width/2, -player.height/2, player.width, player.height);
         }
         
