@@ -1,4 +1,4 @@
- @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap');
+   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap');
 
         body {
             margin: 0;
@@ -19,10 +19,11 @@
 
         canvas {
             display: block;
-            background: #000;
+            background: #111;
             box-shadow: 0 0 50px rgba(255, 100, 0, 0.2);
         }
 
+        /* Overlay screens for Menu, Pause, and Tutorial */
         .overlay {
             position: absolute;
             inset: 0;
@@ -30,37 +31,14 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             color: #e2c08d;
             z-index: 10;
-            transition: opacity 0.3s ease;
         }
 
-        .hidden {
-            display: none;
-            opacity: 0;
-            pointer-events: none;
-        }
+        .hidden { display: none !important; }
 
-        .btn {
-            background: #4a1c1c;
-            border: 2px solid #e2c08d;
-            padding: 10px 30px;
-            margin: 10px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            transition: all 0.2s;
-            min-width: 200px;
-            text-align: center;
-        }
-
-        .btn:hover {
-            background: #e2c08d;
-            color: #4a1c1c;
-            transform: scale(1.05);
-        }
-
+        /* UI Styling for Stats */
         #ui-layer {
             position: absolute;
             top: 20px;
@@ -73,43 +51,61 @@
             z-index: 5;
         }
 
-        .heart {
-            color: #ff4d4d;
-            font-size: 2rem;
-            margin-right: 5px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        .btn {
+            background: #4a1c1c;
+            border: 2px solid #e2c08d;
+            padding: 10px 30px;
+            margin: 10px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #e2c08d;
+            transition: all 0.2s;
+            min-width: 200px;
+            text-align: center;
         }
 
-        .timer {
-            font-family: 'Cinzel', serif;
-            font-size: 2rem;
-            color: #e2c08d;
-            text-shadow: 2px 2px 4px #000;
+        .btn:hover {
+            background: #e2c08d;
+            color: #4a1c1c;
+            transform: scale(1.05);
         }
+
+        .stats-box {
+            background: rgba(26, 18, 11, 0.8);
+            border: 1px solid #e2c08d;
+            padding: 10px;
+            color: #e2c08d;
+            font-family: 'Cinzel', serif;
+        }
+
+        .heart { color: #ff4d4d; font-size: 1.5rem; }
+        .mileage-hidden { display: none; }
 
         .panel {
             background: #1a120b;
-            border: 3px double #e2c08d;
+            border: 5px double #e2c08d;
             padding: 40px;
-            max-width: 500px;
+            max-width: 600px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(0,0,0,1);
+            box-shadow: 0 0 50px rgba(0,0,0,1);
         }
 
-        h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 4rem;
-            margin-bottom: 2rem;
-            text-shadow: 0 0 20px rgba(226, 192, 141, 0.5);
-            color: #e2c08d;
+        .key-hint {
+            display: inline-block;
+            background: #e2c08d;
+            color: #1a120b;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: monospace;
+            margin: 2px;
         }
 
-        .pause-btn {
-            pointer-events: auto;
-            background: rgba(74, 28, 28, 0.6);
-            border: 1px solid #e2c08d;
-            color: #e2c08d;
-            padding: 5px 15px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
+        .tutorial-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+            margin: 20px 0;
         }

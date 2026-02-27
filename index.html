@@ -7,69 +7,66 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div id="game-container">
     <canvas id="gameCanvas"></canvas>
 
-    <!-- UI Layer -->
+    <!-- UI: Health, Timer, and Mileage (Hidden) -->
     <div id="ui-layer" class="hidden">
         <div class="flex flex-col gap-2">
-            <div id="health-bar" class="flex">
-                <span class="heart">❤</span>
-                <span class="heart">❤</span>
-                <span class="heart">❤</span>
+            <div id="health-bar" class="flex"></div>
+            <div class="stats-box mileage-hidden">
+                MILES: <span id="mileageDisplay">0.00</span> / 200
             </div>
-            <button class="pause-btn" onclick="togglePause()">PAUSE [P]</button>
+            <button class="btn" style="min-width: 100px; padding: 5px;" onclick="togglePause()">PAUSE [P]</button>
         </div>
-        <div class="timer" id="timerDisplay">00:00</div>
+        <div class="stats-box" style="font-size: 1.5rem;" id="timerDisplay">00:00</div>
     </div>
 
     <!-- Start Screen -->
     <div id="start-screen" class="overlay">
-        <h1>LABYRINTH OF MINOS</h1>
+        <h1 style="font-family: 'Cinzel'; font-size: 4rem; color: #e2c08d; margin-bottom: 0;">MINOS</h1>
+        <h2 style="font-family: 'Cinzel'; font-size: 1.5rem; color: #8d704d; margin-top: 0;">THE UNENDING LABYRINTH</h2>
         <button class="btn" onclick="startGame()">ENTER THE MAZE</button>
         <button class="btn" onclick="showPanel('tutorial')">HOW TO SURVIVE</button>
-        <button class="btn" onclick="showPanel('settings')">SETTINGS</button>
     </div>
 
     <!-- Pause Menu -->
     <div id="pause-menu" class="overlay hidden">
         <div class="panel">
-            <h2 class="text-4xl font-bold mb-6 font-serif">PAUSED</h2>
+            <h2 style="font-family: 'Cinzel'; font-size: 2.5rem;">PAUSED</h2>
             <button class="btn" onclick="togglePause()">RESUME</button>
-            <button class="btn" onclick="resetGame()">RESET LEVEL</button>
-            <button class="btn" onclick="showPanel('settings')">SETTINGS</button>
-            <button class="btn" onclick="returnToMenu()">MAIN MENU</button>
+            <button class="btn" onclick="location.reload()">RESTART</button>
         </div>
     </div>
 
     <!-- Tutorial Panel -->
     <div id="tutorial" class="overlay hidden">
         <div class="panel">
-            <h2 class="text-3xl mb-4 font-bold">THE FLIGHT OF ICARUS</h2>
-            <ul class="text-left space-y-3 mb-6">
-                <li><span class="text-white font-bold">[W]</span> - Walk Forward (Right)</li>
-                <li><span class="text-white font-bold">[A]</span> - Walk Backward (Left)</li>
-                <li><span class="text-white font-bold">[SPACE]</span> - Flap Wings (Jump)</li>
-                <li><span class="text-white font-bold">[SHIFT]</span> - Sprint</li>
-                <li><span class="text-white font-bold">[P]</span> - Pause Game</li>
-            </ul>
-            <button class="btn" onclick="hidePanels()">BACK</button>
-        </div>
-    </div>
-
-    <!-- Settings Panel -->
-    <div id="settings" class="overlay hidden">
-        <div class="panel">
-            <h2 class="text-3xl mb-4 font-bold">SETTINGS</h2>
-            <div class="mb-6">
-                <label class="block mb-2">MASTER VOLUME</label>
-                <input type="range" class="w-full accent-[#e2c08d]">
+            <h2 style="font-family: 'Cinzel'; color: #e2c08d;">TUTORIAL</h2>
+            <div class="tutorial-grid">
+                <div>
+                    <p><span class="key-hint">A</span> & <span class="key-hint">D</span></p>
+                    <small>Walk left or right through the halls.</small>
+                </div>
+                <div>
+                    <p><span class="key-hint">SHIFT</span> + Movement</p>
+                    <small>Run faster to cover miles quickly.</small>
+                </div>
+                <div>
+                    <p><span class="key-hint">SPACE</span></p>
+                    <small>Jump over obstacles or gaps.</small>
+                </div>
+                <div>
+                    <p><span class="key-hint">P</span></p>
+                    <small>Pause the flow of time.</small>
+                </div>
             </div>
-            <button class="btn" onclick="hidePanels()">SAVE & BACK</button>
+            <p style="font-size: 0.9rem; color: #8d704d; font-style: italic;">"The door will appear only after 200 miles have been tread."</p>
+            <button class="btn" onclick="hidePanels()">UNDERSTOOD</button>
         </div>
     </div>
 </div>
+
 
     <script src="index.js"></script>
     
