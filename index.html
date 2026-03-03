@@ -38,8 +38,17 @@
         <div class="panel">
             <h2 class="text-4xl font-bold mb-6 font-serif">PAUSED</h2>
             <button class="btn" onclick="togglePause()">RESUME</button>
-            <button class="btn" onclick="resetGame()">RESET MAZE</button>
+            <button class="btn" onclick="resetToStartLine()">RESTART MAZE</button>
             <button class="btn" onclick="returnToMenu()">MAIN MENU</button>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="custom-alert" class="overlay hidden">
+        <div class="panel">
+            <h2 id="alert-title" class="text-3xl font-bold mb-4 font-serif">NOTICE</h2>
+            <p id="alert-message" class="mb-6 text-lg italic"></p>
+            <button class="btn" onclick="handleAlertConfirm()">CONTINUE</button>
         </div>
     </div>
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap');
 
         body {
             margin: 0;
@@ -37,7 +37,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
             opacity: 0;
             pointer-events: none;
         }
