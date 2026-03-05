@@ -4,103 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Labyrinth of Minos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="scanlines"></div>
+
 <div id="game-container">
     <canvas id="gameCanvas"></canvas>
 
     <div id="ui-layer" class="hidden">
-        <div class="hud-panel">
-            <div class="hud-label">⚔ Hero</div>
-            <div id="health-bar"></div>
-            <div id="layer-name" class="layer-info">—</div>
-            <div id="room-prog"  class="room-prog">— / —</div>
-            <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:5%"></div></div>
+        <div class="flex flex-col gap-2">
+            <div id="health-bar" class="flex">
+                <span class="heart">❤</span>
+                <span class="heart">❤</span>
+                <span class="heart">❤</span>
+            </div>
+            <div id="current-layer-name" class="layer-info">Layer 1: Entry</div>
+            <button class="pause-btn" onclick="togglePause()">PAUSE [P]</button>
         </div>
-        <div class="hud-panel hud-right">
-            <div class="hud-label">⏱ Time</div>
-            <div class="timer" id="timer">00:00</div>
+        <div class="flex flex-col items-end">
+            <div class="timer" id="timerDisplay">00:00</div>
+            <div id="room-progress" class="text-xs text-[#e2c08d]">Room 1 / 10</div>
         </div>
-    </div>
-
-    <div id="hud-bottom" class="hidden">
-        <div class="ctrl-hint">[ W/D ] Move &nbsp; [ Space ] Jump &nbsp; [ Shift ] Sprint</div>
-        <button class="pause-btn" onclick="togglePause()">⏸ Pause [P]</button>
     </div>
 
     <div id="start-screen" class="overlay">
-        <div id="ember-container" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
-        <div class="start-logo-art">🏛️</div>
-        <div style="height:14px"></div>
-        <div class="title-main">LABYRINTH OF MINOS</div>
-        <div class="section-divider"></div>
-        <button class="btn btn-primary" onclick="startGame()">▶ &nbsp; Enter the Maze</button>
-        <button class="btn" onclick="showPanel('tutorial')">📖 &nbsp; How to Survive</button>
-        <button class="btn" onclick="showPanel('settings')">⚙ &nbsp; Settings</button>
-        <div class="blink-text">— Press Enter to Begin —</div>
+        <h1>LABYRINTH OF MINOS</h1>
+        <button class="btn" onclick="startGame()">ENTER THE MAZE</button>
+        <button class="btn" onclick="showPanel('tutorial')">HOW TO SURVIVE</button>
+        <button class="btn" onclick="showPanel('settings')">SETTINGS</button>
     </div>
 
     <div id="pause-menu" class="overlay hidden">
-        <div class="pixel-panel">
-            <div class="panel-bl">✦</div><div class="panel-br">✦</div>
-            <div class="pause-icon">⏸</div>
-            <div class="panel-title">— Paused —</div>
-            <div class="section-divider"></div>
-            <button class="btn btn-primary" onclick="togglePause()">▶ &nbsp; Resume</button>
-            <button class="btn" onclick="resetMaze()">↺ &nbsp; Restart Maze</button>
-            <button class="btn btn-danger" onclick="returnToMenu()">⏹ &nbsp; Main Menu</button>
+        <div class="panel">
+            <h2 class="text-4xl font-bold mb-6 font-serif">PAUSED</h2>
+            <button class="btn" onclick="togglePause()">RESUME</button>
+            <button class="btn" onclick="resetToStartLine()">RESTART MAZE</button>
+            <button class="btn" onclick="returnToMenu()">MAIN MENU</button>
         </div>
     </div>
 
+    <!-- Custom Alert Modal -->
     <div id="custom-alert" class="overlay hidden">
-        <div class="pixel-panel">
-            <div class="panel-bl">✦</div><div class="panel-br">✦</div>
-            <div id="alert-icon" class="alert-icon">💀</div>
-            <div id="alert-title">Notice</div>
-            <div class="section-divider"></div>
-            <p id="alert-message"></p>
-            <button class="btn btn-primary" onclick="handleAlertConfirm()">↺ &nbsp; Try Again</button>
+        <div class="panel">
+            <h2 id="alert-title" class="text-3xl font-bold mb-4 font-serif">NOTICE</h2>
+            <p id="alert-message" class="mb-6 text-lg italic"></p>
+            <button class="btn" onclick="handleAlertConfirm()">CONTINUE</button>
         </div>
     </div>
 
     <div id="tutorial" class="overlay hidden">
-        <div class="pixel-panel" style="max-width:560px">
-            <div class="panel-bl">✦</div><div class="panel-br">✦</div>
-            <div class="panel-title">📜 How to Survive</div>
-            <div class="section-divider"></div>
-            <div style="text-align:left">
-                <div class="key-binding"><div class="key-chip">W / D</div><div class="key-desc">Walk <span>Forward</span></div></div>
-                <div class="key-binding"><div class="key-chip">A</div><div class="key-desc">Walk <span>Backward</span></div></div>
-                <div class="key-binding"><div class="key-chip">Space</div><div class="key-desc"><span>Jump</span></div></div>
-                <div class="key-binding"><div class="key-chip">Shift</div><div class="key-desc"><span>Sprint</span></div></div>
-                <div class="key-binding"><div class="key-chip">P</div><div class="key-desc"><span>Pause</span></div></div>
-            </div>
-            <div class="section-divider"></div>
-            <p style="font-family:Cinzel,serif;font-size:0.8rem;color:var(--text-parchment);line-height:1.7;font-style:italic;margin-bottom:20px;">
-                Reach the <span style="color:var(--gold-bright)">Golden Portal</span> to advance. Fall into the void and lose a life. Lose all 3 and the labyrinth claims you.
-            </p>
-            <button class="btn" onclick="hidePanels()">← &nbsp; Back</button>
+        <div class="panel">
+            <h2 class="text-3xl mb-4 font-bold">THE FLIGHT OF ICARUS</h2>
+            <ul class="text-left space-y-3 mb-6">
+                <li><span class="text-white font-bold">[W]</span> - Walk Forward (Right)</li>
+                <li><span class="text-white font-bold">[A]</span> - Walk Backward (Left)</li>
+                <li><span class="text-white font-bold">[SPACE]</span> - Jump</li>
+                <li><span class="text-white font-bold">[SHIFT]</span> - Sprint</li>
+                <li>Reach the <span class="text-yellow-500 font-bold">Golden Portal</span> to advance rooms.</li>
+            </ul>
+            <button class="btn" onclick="hidePanels()">BACK</button>
         </div>
     </div>
 
     <div id="settings" class="overlay hidden">
-        <div class="pixel-panel" style="max-width:460px">
-            <div class="panel-bl">✦</div><div class="panel-br">✦</div>
-            <div class="panel-title">⚙ Settings</div>
-            <div class="section-divider"></div>
-            <div style="text-align:left;border:1px solid rgba(212,168,67,0.2);padding:16px;">
-                <div class="settings-row"><span class="settings-label">Scanlines</span><div class="toggle on" id="tog-scanlines" onclick="toggleSetting(this)"></div></div>
-                <div class="settings-row"><span class="settings-label">Difficulty</span><span style="font-family:Cinzel,serif;font-size:0.75rem;color:var(--gold)">Normal</span></div>
-            </div>
-            <div style="height:20px"></div>
-            <button class="btn" onclick="hidePanels()">← &nbsp; Back</button>
+        <div class="panel">
+            <h2 class="text-3xl mb-4 font-bold">SETTINGS</h2>
+            <p class="mb-4">Maze difficulty and sound options.</p>
+            <button class="btn" onclick="hidePanels()">BACK</button>
         </div>
     </div>
 </div>
 
-<script src="script.js"></script>
+
+    <script src="script.js"></script>
+    
 </body>
 </html>

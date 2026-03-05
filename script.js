@@ -17,7 +17,7 @@ function loadImg(src) {
     });
 }
 
-const sprites = { idle: null, idle2: null, walk: [], run: [] };
+const sprites = { idle: null, idle2: null, walk: [zzz], run: [] };
 let spritesReady = false;
 
 async function initSprites() {
