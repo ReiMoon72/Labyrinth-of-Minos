@@ -1,122 +1,147 @@
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #000;
-            font-family: 'MedievalSharp', cursive;
-            user-select: none;
+        :root {
+            --bg-void: #050305;
+            --bg-panel: #120e1a;
+            --brown-dark: #2a1a0e;
+            --brown-mid: #4a2e1a;
+            --brown-light: #7a4a2a;
+            --gold: #d4a843;
+            --gold-bright: #f0c060;
+            --gold-dark: #8a6a20;
+            --crimson-bright: #cc2222;
+            --blood: #ff3333;
+            --muted: #9a8070;
+            --text-dim: #7a6a5a;
+            --text-parchment: #d4b896;
+            --teal-accent: #2a8a7a;
+            --glow-gold: 0 0 20px rgba(212,168,67,0.6), 0 0 40px rgba(212,168,67,0.2);
+            --glow-red: 0 0 20px rgba(200,30,30,0.6);
         }
 
-        #game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        body { margin:0; overflow:hidden; background:var(--bg-void); font-family:'Cinzel',serif; user-select:none; }
+
+        canvas { display:block; image-rendering:pixelated; image-rendering:crisp-edges; image-rendering:-moz-crisp-edges; }
+
+        #scanlines {
+            position:fixed; inset:0; pointer-events:none; z-index:100;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);
         }
 
-        canvas {
-            display: block;
-            background: #000;
-            box-shadow: 0 0 50px rgba(255, 100, 0, 0.2);
-        }
+        #game-container { position:relative; width:100vw; height:100vh; display:flex; justify-content:center; align-items:center; background:var(--bg-void); }
 
         .overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.85);
-            color: #e2c08d;
-            z-index: 10;
-            transition: opacity 0.3s ease;
+            position:absolute; inset:0; display:flex; flex-direction:column;
+            justify-content:center; align-items:center;
+            background:rgba(5,3,5,0.93); color:var(--text-parchment); z-index:20;
         }
+        .hidden { display:none !important; }
 
-        .hidden {
-            display: none !important;
-            opacity: 0;
-            pointer-events: none;
+        .pixel-panel {
+            background:var(--bg-panel); border:3px solid var(--gold-dark);
+            box-shadow:4px 4px 0 var(--gold-dark),inset 0 0 40px rgba(0,0,0,0.8),0 0 60px rgba(0,0,0,0.9);
+            padding:40px 50px; max-width:520px; width:90%; text-align:center; position:relative; overflow:hidden;
+        }
+        .pixel-panel::before { content:"✦"; position:absolute; top:12px; left:16px; color:var(--gold); font-size:1.2rem; opacity:0.6; }
+        .pixel-panel::after  { content:"✦"; position:absolute; top:12px; right:16px; color:var(--gold); font-size:1.2rem; opacity:0.6; }
+        .panel-bl { position:absolute; bottom:12px; left:16px;  color:var(--gold); font-size:1.2rem; opacity:0.6; }
+        .panel-br { position:absolute; bottom:12px; right:16px; color:var(--gold); font-size:1.2rem; opacity:0.6; }
+
+        .title-main {
+            font-family:'Cinzel',serif;
+            font-weight:900;
+            font-size:clamp(1.8rem,5vw,4.2rem);
+            color:#e8d5a3;
+            text-shadow:0 0 40px rgba(220,185,120,0.5),0 0 80px rgba(200,155,80,0.2),0 2px 4px rgba(0,0,0,0.8);
+            line-height:1.1; letter-spacing:0.08em; margin-bottom:16px; white-space:nowrap;
+        }
+        .title-sub {
+            font-family:'Cinzel',serif; font-size:clamp(0.6rem,1.4vw,0.8rem);
+            color:var(--muted); letter-spacing:6px; text-transform:uppercase; margin-bottom:36px;
+        }
+        .panel-title {
+            font-family:'Cinzel',serif; font-size:clamp(0.9rem,2vw,1.2rem);
+            color:var(--gold-bright); text-shadow:var(--glow-gold); margin-bottom:28px; letter-spacing:1px;
+        }
+        .section-divider {
+            width:100%; height:2px;
+            background:linear-gradient(90deg,transparent,var(--gold-dark),var(--gold),var(--gold-dark),transparent);
+            margin:18px 0;
         }
 
         .btn {
-            background: #4a1c1c;
-            border: 2px solid #e2c08d;
-            padding: 10px 30px;
-            margin: 10px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            transition: all 0.2s;
-            min-width: 200px;
-            text-align: center;
+            display:block; background:var(--brown-dark);
+            border:2px solid var(--gold-dark); border-bottom:4px solid #1a0a04; border-right:4px solid #1a0a04;
+            color:var(--text-parchment); padding:12px 28px; margin:8px auto; cursor:pointer;
+            font-family:'Cinzel',serif; font-size:clamp(0.7rem,1.3vw,0.85rem);
+            letter-spacing:1px; transition:all 0.1s; min-width:240px; text-align:center; text-transform:uppercase; position:relative;
         }
+        .btn::before { content:"▶"; position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--gold); opacity:0; transition:opacity 0.15s; font-size:0.5rem; }
+        .btn:hover { background:var(--brown-mid); color:var(--gold-bright); border-color:var(--gold); border-bottom:2px solid var(--gold); border-right:2px solid var(--gold); border-top:4px solid var(--gold-bright); border-left:4px solid var(--gold-bright); text-shadow:var(--glow-gold); transform:translate(-2px,-2px); box-shadow:var(--glow-gold),4px 4px 0 var(--gold-dark); }
+        .btn:hover::before { opacity:1; }
+        .btn:active { transform:translate(2px,2px); border-bottom:2px solid #1a0a04; border-right:2px solid #1a0a04; border-top:2px solid var(--gold-dark); border-left:2px solid var(--gold-dark); box-shadow:none; }
+        .btn-primary { background:linear-gradient(180deg,#3a2010 0%,#2a1408 100%); border-color:var(--gold); color:var(--gold-bright); }
+        .btn-danger  { border-color:var(--crimson-bright); color:#ff8888; }
+        .btn-danger:hover { border-color:var(--blood); color:#ffaaaa; text-shadow:var(--glow-red); box-shadow:var(--glow-red),4px 4px 0 #550000; }
 
-        .btn:hover {
-            background: #e2c08d;
-            color: #4a1c1c;
-            transform: scale(1.05);
+        #start-screen {
+            background:radial-gradient(ellipse at 50% 20%,rgba(60,30,10,0.4) 0%,transparent 60%),
+                       radial-gradient(ellipse at 20% 80%,rgba(26,10,46,0.5) 0%,transparent 50%),
+                       rgba(5,3,5,0.95);
         }
+        .start-logo-art { font-size:clamp(3rem,8vw,6rem); line-height:1; filter:drop-shadow(0 0 20px rgba(212,168,67,0.4)); animation:torchFlicker 3s ease-in-out infinite; }
+        @keyframes torchFlicker { 0%,100%{filter:drop-shadow(0 0 20px rgba(212,168,67,0.4))} 33%{filter:drop-shadow(0 0 30px rgba(255,180,40,0.6))} 66%{filter:drop-shadow(0 0 15px rgba(212,100,20,0.5))} }
+        .blink-text { font-family:"Cinzel",serif; font-size:clamp(0.65rem,1.4vw,0.85rem); color:var(--gold); letter-spacing:3px; animation:blink 1.2s step-end infinite; margin-top:16px; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        .particle { position:absolute; width:3px; height:3px; opacity:0; animation:floatUp 4s ease-in infinite; pointer-events:none; }
+        @keyframes floatUp { 0%{opacity:0;transform:translateY(0) scale(1)} 20%{opacity:0.7} 80%{opacity:0.3} 100%{opacity:0;transform:translateY(-120px) scale(0)} }
 
         #ui-layer {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            pointer-events: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            z-index: 5;
+            position:absolute; top:0; left:0; right:0; pointer-events:none;
+            display:flex; justify-content:space-between; align-items:flex-start;
+            z-index:10; padding:12px 16px;
+            background:linear-gradient(180deg,rgba(0,0,0,0.7) 0%,transparent 100%);
         }
+        .hud-panel { background:rgba(10,6,14,0.85); border:2px solid rgba(212,168,67,0.4); padding:8px 12px; min-width:150px; }
+        .hud-label { font-family:"Cinzel",serif; font-size:0.65rem; color:var(--gold-dark); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+        #health-bar { display:flex; gap:6px; align-items:center; margin-bottom:6px; }
+        .heart { width:20px; height:20px; transition:all 0.3s; }
+        .heart.full { filter:drop-shadow(0 0 4px rgba(255,40,40,0.8)); }
+        .layer-info { font-family:"Cinzel",serif; font-size:0.7rem; color:var(--gold); text-transform:uppercase; letter-spacing:1px; line-height:1.5; }
+        .room-prog  { font-family:"Cinzel",serif; font-size:0.62rem; color:var(--muted); letter-spacing:1px; margin-top:3px; }
+        .progress-track { width:140px; height:5px; background:rgba(255,255,255,0.1); border:1px solid var(--gold-dark); margin-top:5px; }
+        .progress-fill  { height:100%; background:linear-gradient(90deg,var(--brown-light),var(--gold)); transition:width 0.5s ease; box-shadow:0 0 6px var(--gold); }
+        .timer { font-family:"Cinzel",serif; font-size:1.2rem; color:var(--gold-bright); text-shadow:var(--glow-gold); letter-spacing:3px; margin-bottom:4px; }
+        .hud-right { text-align:right; }
 
-        .heart {
-            color: #ff4d4d;
-            font-size: 2rem;
-            margin-right: 5px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        #hud-bottom {
+            position:absolute; bottom:0; left:0; right:0; pointer-events:auto;
+            display:flex; justify-content:space-between; align-items:flex-end;
+            z-index:10; padding:8px 16px 10px;
+            background:linear-gradient(0deg,rgba(0,0,0,0.7) 0%,transparent 100%);
         }
+        .ctrl-hint { font-family:"Cinzel",serif; font-size:0.62rem; color:rgba(154,128,112,0.55); letter-spacing:1px; }
+        .pause-btn { pointer-events:auto; background:rgba(10,6,14,0.85); border:2px solid rgba(212,168,67,0.5); color:var(--gold); padding:6px 14px; cursor:pointer; font-family:"Cinzel",serif; font-size:0.7rem; letter-spacing:1px; transition:all 0.2s; }
+        .pause-btn:hover { border-color:var(--gold-bright); color:var(--gold-bright); text-shadow:var(--glow-gold); background:rgba(42,20,8,0.9); }
 
-        .timer {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: #e2c08d;
-            text-shadow: 2px 2px 4px #000;
-        }
+        .pause-icon { font-size:2.5rem; margin-bottom:10px; animation:pulsePause 2s ease-in-out infinite; }
+        @keyframes pulsePause { 0%,100%{opacity:0.8} 50%{opacity:1;filter:drop-shadow(0 0 10px var(--gold))} }
 
-        .layer-info {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            color: #ffd700;
-            text-transform: uppercase;
-        }
+        .key-binding { display:flex; align-items:center; gap:14px; padding:8px 0; border-bottom:1px solid rgba(212,168,67,0.1); }
+        .key-chip { background:var(--brown-dark); border:2px solid var(--gold-dark); border-bottom:3px solid #1a0a04; border-right:3px solid #1a0a04; color:var(--gold-bright); font-family:"Cinzel",serif; font-size:0.68rem; padding:5px 10px; min-width:60px; text-align:center; letter-spacing:1px; }
+        .key-desc { font-family:"Cinzel",serif; font-size:0.8rem; color:var(--text-parchment); }
+        .key-desc span { color:var(--gold); font-weight:600; }
 
-        .panel {
-            background: #1a120b;
-            border: 3px double #e2c08d;
-            padding: 40px;
-            max-width: 500px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(0,0,0,1);
-        }
+        .alert-icon { font-size:3rem; margin-bottom:14px; animation:shakeIn 0.5s ease 0.2s both; }
+        @keyframes shakeIn { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+        #alert-title { font-family:"Cinzel",serif; font-size:clamp(0.9rem,2vw,1.2rem); color:var(--gold-bright); text-shadow:var(--glow-gold); margin-bottom:12px; }
+        #alert-message { font-family:"Cinzel",serif; font-size:clamp(0.72rem,1.4vw,0.9rem); color:var(--text-parchment); line-height:1.7; margin-bottom:22px; font-style:italic; }
 
-        h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 4rem;
-            margin-bottom: 2rem;
-            text-shadow: 0 0 20px rgba(226, 192, 141, 0.5);
-            color: #e2c08d;
-        }
+        .settings-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(212,168,67,0.1); }
+        .settings-label { font-family:"Cinzel",serif; font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:2px; }
+        .toggle { width:44px; height:22px; background:var(--brown-dark); border:2px solid var(--gold-dark); position:relative; cursor:pointer; pointer-events:auto; }
+        .toggle.on { background:var(--teal-accent); border-color:var(--gold); }
+        .toggle::after { content:""; position:absolute; width:14px; height:14px; background:var(--text-dim); top:2px; left:2px; transition:all 0.2s; }
+        .toggle.on::after { left:24px; background:var(--gold-bright); }
 
-        .pause-btn {
-            pointer-events: auto;
-            background: rgba(74, 28, 28, 0.6);
-            border: 1px solid #e2c08d;
-            color: #e2c08d;
-            padding: 5px 15px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-        }
+        @media(max-width:600px) { .pixel-panel{padding:22px 18px} .btn{min-width:200px;font-size:0.7rem} .title-main{font-size:1.8rem;white-space:normal;text-align:center} }
