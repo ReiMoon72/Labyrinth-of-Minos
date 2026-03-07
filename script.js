@@ -1,3 +1,14 @@
+// Sprite URLs (placeholder base64 data URIs)
+const SPRITE_IDLE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const SPRITE_IDLE2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const SPRITE_WALK1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const SPRITE_WALK2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const SPRITE_WALK3 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const SPRITE_RUN1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const SPRITE_RUN2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const SPRITE_RUN3 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const SPRITE_RUN4 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
 function loadImg(src) {
     return new Promise(resolve => {
         const img = new Image();
@@ -63,6 +74,7 @@ function disableSmoothing() {
 let maze = [], roomIdx = 0, gameState = 'menu', isPaused = false;
 let startTime = 0, lives = 3, bgScrollX = 0;
 let particles = [], torchFlicker = 0;
+let doorReached = false;
 
 const SPRITE_W = 56;
 const SPRITE_H = 72;
@@ -90,6 +102,11 @@ window.addEventListener('keydown', e => {
     if (e.code === 'KeyP') togglePause();
     if (e.code === 'Enter' && gameState === 'menu') startGame();
     if (e.code === 'Space') e.preventDefault();
+    
+    // Press E to interact with door
+    if (e.code === 'KeyE' && doorReached && !isPaused) {
+        openDoorQuiz();
+    }
 });
 window.addEventListener('keyup', e => keys[e.code] = false);
 
@@ -227,6 +244,98 @@ function drawPortal() {
     if (Math.random() < 0.25) spawnParticle(px+25+(Math.random()-0.5)*18, py+ph/2, '#ffd700', 'ember');
 }
 
+function drawDoor() {
+    // Only show door in the last room
+    if (roomIdx !== maze.length - 1) return;
+    
+    const W = canvas.width, H = canvas.height;
+    const t = Date.now() * 0.001;
+    
+    // Door position - left side of screen
+    const doorX = 80;
+    const doorY = H * 0.45;
+    const doorW = 80;
+    const doorH = H * 0.45;
+    
+    // Stone archway
+    ctx.fillStyle = '#3a2a28';
+    ctx.fillRect(doorX - 15, doorY - 20, doorW + 30, doorH + 20);
+    
+    // Stone texture
+    ctx.strokeStyle = 'rgba(90,70,60,0.4)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 8; i++) {
+        const sy = doorY - 20 + (i * (doorH + 20) / 8);
+        ctx.beginPath();
+        ctx.moveTo(doorX - 15, sy);
+        ctx.lineTo(doorX + doorW + 15, sy);
+        ctx.stroke();
+    }
+    
+    // Wooden door
+    const doorGrad = ctx.createLinearGradient(doorX, doorY, doorX, doorY + doorH);
+    doorGrad.addColorStop(0, '#4a3020');
+    doorGrad.addColorStop(0.5, '#3a2010');
+    doorGrad.addColorStop(1, '#2a1808');
+    ctx.fillStyle = doorGrad;
+    ctx.fillRect(doorX, doorY, doorW, doorH);
+    
+    // Door planks
+    ctx.strokeStyle = 'rgba(30,20,10,0.6)';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 6; i++) {
+        const py = doorY + (i * doorH / 6);
+        ctx.beginPath();
+        ctx.moveTo(doorX, py);
+        ctx.lineTo(doorX + doorW, py);
+        ctx.stroke();
+    }
+    
+    // Metal bands
+    ctx.fillStyle = '#2a2a2a';
+    ctx.fillRect(doorX, doorY + doorH * 0.2, doorW, 4);
+    ctx.fillRect(doorX, doorY + doorH * 0.5, doorW, 4);
+    ctx.fillRect(doorX, doorY + doorH * 0.8, doorW, 4);
+    
+    // Door handle
+    ctx.fillStyle = '#8a7a5a';
+    ctx.beginPath();
+    ctx.arc(doorX + doorW - 20, doorY + doorH / 2, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Glow effect when player is near
+    if (doorReached) {
+        const glowGrad = ctx.createRadialGradient(
+            doorX + doorW/2, doorY + doorH/2, 10,
+            doorX + doorW/2, doorY + doorH/2, 100
+        );
+        glowGrad.addColorStop(0, 'rgba(122, 74, 40, ' + (0.3 + Math.sin(t * 2) * 0.15) + ')');
+        glowGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = glowGrad;
+        ctx.fillRect(doorX - 50, doorY - 50, doorW + 100, doorH + 100);
+        
+        // "Press E" prompt
+        ctx.save();
+        ctx.fillStyle = 'rgba(212, 168, 67, ' + (0.7 + Math.sin(t * 3) * 0.3) + ')';
+        ctx.font = 'bold 16px Cinzel, serif';
+        ctx.textAlign = 'center';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#d4a843';
+        ctx.fillText('Press [E] to Enter', doorX + doorW/2, doorY - 30);
+        ctx.restore();
+    }
+    
+    // Door particles
+    if (doorReached && Math.random() < 0.1) {
+        spawnParticle(
+            doorX + doorW/2 + (Math.random() - 0.5) * doorW,
+            doorY + doorH/2 + (Math.random() - 0.5) * doorH,
+            '#7a4a28',
+            'dust'
+        );
+    }
+}
+
 function drawPlayer() {
     ctx.save();
     disableSmoothing();
@@ -334,6 +443,26 @@ function update() {
             }
         });
     }
+    
+    // Check if player is near the door (only in last room)
+    if (roomIdx === maze.length - 1) {
+        const doorX = 80;
+        const doorY = canvas.height * 0.45;
+        const doorW = 80;
+        const doorH = canvas.height * 0.45;
+        
+        const playerCenterX = player.x + SPRITE_W / 2;
+        const playerCenterY = player.y + SPRITE_H / 2;
+        
+        doorReached = (
+            playerCenterX > doorX - 50 &&
+            playerCenterX < doorX + doorW + 50 &&
+            playerCenterY > doorY &&
+            playerCenterY < doorY + doorH
+        );
+    } else {
+        doorReached = false;
+    }
 
     if (player.x + SPRITE_W > canvas.width - 5) {
         if (roomIdx < maze.length - 1) { roomIdx++; setupRoom(); }
@@ -365,6 +494,7 @@ function draw() {
     disableSmoothing();
     drawBG();
     drawPlatforms(maze[roomIdx]);
+    drawDoor();
     drawPortal();
     drawParticles();
     drawPlayer();
@@ -413,7 +543,7 @@ function generateMaze() {
 
 function startGame() {
     maze = generateMaze();
-    roomIdx = 0; lives = 3; gameState = 'playing'; isPaused = false; particles = [];
+    roomIdx = 0; lives = 3; gameState = 'playing'; isPaused = false; particles = []; doorReached = false;
     startTime = Date.now();
     setupRoom();
     document.getElementById('start-screen').classList.add('hidden');
@@ -427,6 +557,7 @@ function setupRoom() {
     player.y = canvas.height * 0.4;
     player.vx = 0; player.vy = 0; player.grounded = false;
     player.frame = 0; player.animTick = 0;
+    doorReached = false;
     const room = maze[roomIdx];
     document.getElementById('layer-name').innerText = room.layerName || '—';
     document.getElementById('room-prog').innerText = 'Room '+(roomIdx+1)+' / '+maze.length;
@@ -470,7 +601,7 @@ function handleAlertConfirm() {
 }
 
 function resetMaze() {
-    roomIdx = 0; lives = 3; startTime = Date.now(); particles = [];
+    roomIdx = 0; lives = 3; startTime = Date.now(); particles = []; doorReached = false;
     setupRoom(); isPaused = false;
     document.getElementById('pause-menu').classList.add('hidden');
     requestAnimationFrame(gameLoop);
@@ -487,7 +618,7 @@ resize();
 function showPanel(id) { document.getElementById(id).classList.remove('hidden'); }
 function hidePanels() {
     document.querySelectorAll('.overlay').forEach(function(e) {
-        if (!['start-screen','pause-menu','custom-alert'].includes(e.id)) e.classList.add('hidden');
+        if (!['start-screen','pause-menu','custom-alert','door-quiz'].includes(e.id)) e.classList.add('hidden');
     });
 }
 function returnToMenu() { location.reload(); }
@@ -496,6 +627,56 @@ function toggleSetting(el) {
     el.classList.toggle('on');
     if (el.id === 'tog-scanlines') {
         document.getElementById('scanlines').style.display = el.classList.contains('on') ? 'block' : 'none';
+    }
+}
+
+// Door Quiz Functions
+function openDoorQuiz() {
+    isPaused = true;
+    document.getElementById('door-quiz').classList.remove('hidden');
+    // Clear any previous selection
+    document.querySelectorAll('input[name="quiz-answer"]').forEach(radio => radio.checked = false);
+}
+
+function closeDoorQuiz() {
+    isPaused = false;
+    document.getElementById('door-quiz').classList.add('hidden');
+    requestAnimationFrame(gameLoop);
+}
+
+function submitQuizAnswer() {
+    const selected = document.querySelector('input[name="quiz-answer"]:checked');
+    
+    if (!selected) {
+        alert('Please select an answer!');
+        return;
+    }
+    
+    const correctAnswer = 'B'; // x² - 5x + 6 = 0 factors to (x-2)(x-3) = 0, so x = 2 or x = 3
+    
+    if (selected.value === correctAnswer) {
+        // Correct answer - go to room2.html
+        document.getElementById('door-quiz').classList.add('hidden');
+        showAlert('✅', 'Correct!', 'The door opens before you. Your knowledge has granted you passage to the next realm!', '→ Continue');
+        
+        // Navigate to room2.html after a brief delay
+        setTimeout(() => {
+            window.location.href = 'room2.html';
+        }, 2000);
+    } else {
+        // Wrong answer - deduct health
+        lives--;
+        updateHUD();
+        
+        document.getElementById('door-quiz').classList.add('hidden');
+        
+        if (lives <= 0) {
+            showAlert('💀', 'Failed!', 'Your incorrect answer has sealed your fate. The labyrinth claims another soul.', '↺ Restart');
+        } else {
+            showAlert('❌', 'Incorrect!', 'The door rejects your answer. You feel the ancient magic drain your life force. One heart lost!', '→ Continue');
+            isPaused = false;
+            requestAnimationFrame(gameLoop);
+        }
     }
 }
 
