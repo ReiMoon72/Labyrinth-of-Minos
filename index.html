@@ -8,166 +8,101 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="scanlines"></div>
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
+<div id="scanlines"></div>
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
 
-        <div id="ui-layer" class="hidden">
-            <div class="hud-panel">
-                <div class="hud-label">⚔ Hero</div>
-                <div id="health-bar"></div>
-                <div id="layer-name" class="layer-info">—</div>
-                <div id="room-prog" class="room-prog">— / —</div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="prog-fill" style="width:5%"></div>
-                </div>
-            </div>
-            <div class="hud-panel hud-right">
-                <div class="hud-label">⏱ Time</div>
-                <div class="timer" id="timer">00:00</div>
-            </div>
+    <div id="ui-layer" class="hidden">
+        <div class="hud-panel">
+            <div class="hud-label">⚔ Hero</div>
+            <div id="health-bar"></div>
+            <div id="layer-name" class="layer-info">—</div>
+            <div id="room-prog"  class="room-prog">— / —</div>
+            <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:5%"></div></div>
         </div>
-
-        <div id="hud-bottom" class="hidden">
-            <div class="ctrl-hint">[ W/D ] Move &nbsp; [ Space ] Jump &nbsp; [ Shift ] Sprint</div>
-            <button class="pause-btn" onclick="togglePause()">⏸ Pause [P]</button>
-        </div>
-
-        <div id="start-screen" class="overlay">
-            <div id="ember-container" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
-            <div class="start-logo-art">🏛️</div>
-            <div style="height:14px"></div>
-            <div class="title-main">LABYRINTH OF MINOS</div>
-            <div class="section-divider"></div>
-            <button class="btn btn-primary" onclick="startGame()">▶ &nbsp; Enter the Maze</button>
-            <button class="btn" onclick="showPanel('tutorial')">📖 &nbsp; How to Survive</button>
-            <button class="btn" onclick="showPanel('settings')">⚙ &nbsp; Settings</button>
-            <div class="blink-text">— Press Enter to Begin —</div>
-        </div>
-
-        <div id="pause-menu" class="overlay hidden">
-            <div class="pixel-panel">
-                <div class="panel-bl">✦</div>
-                <div class="panel-br">✦</div>
-                <div class="pause-icon">⏸</div>
-                <div class="panel-title">— Paused —</div>
-                <div class="section-divider"></div>
-                <button class="btn btn-primary" onclick="togglePause()">▶ &nbsp; Resume</button>
-                <button class="btn" onclick="resetMaze()">↺ &nbsp; Restart Maze</button>
-                <button class="btn btn-danger" onclick="returnToMenu()">⏹ &nbsp; Main Menu</button>
-            </div>
-        </div>
-
-        <div id="custom-alert" class="overlay hidden">
-            <div class="pixel-panel">
-                <div class="panel-bl">✦</div>
-                <div class="panel-br">✦</div>
-                <div id="alert-icon" class="alert-icon">💀</div>
-                <div id="alert-title">Notice</div>
-                <div class="section-divider"></div>
-                <p id="alert-message"></p>
-                <button class="btn btn-primary" onclick="handleAlertConfirm()">↺ &nbsp; Try Again</button>
-            </div>
-        </div>
-
-        <!-- Door Quiz Modal -->
-        <div id="door-quiz" class="overlay hidden">
-            <div class="pixel-panel" style="max-width:600px">
-                <div class="panel-bl">✦</div>
-                <div class="panel-br">✦</div>
-                <div class="panel-title">🚪 The Door of Knowledge</div>
-                <div class="section-divider"></div>
-                <p style="font-family:Cinzel,serif;font-size:0.85rem;color:var(--text-parchment);line-height:1.7;margin-bottom:20px;">
-                    To pass through this ancient door, you must prove your mathematical prowess!
-                </p>
-                <div class="quiz-question">
-                    <p style="font-family:Cinzel,serif;font-size:0.9rem;color:var(--gold-bright);margin-bottom:20px;font-weight:600;">
-                        Solve the quadratic equation: x² - 5x + 6 = 0
-                    </p>
-                    <div class="quiz-options">
-                        <label class="quiz-option">
-                            <input type="radio" name="quiz-answer" value="A">
-                            <span>A) x = 1, x = 6</span>
-                        </label>
-                        <label class="quiz-option">
-                            <input type="radio" name="quiz-answer" value="B">
-                            <span>B) x = 2, x = 3</span>
-                        </label>
-                        <label class="quiz-option">
-                            <input type="radio" name="quiz-answer" value="C">
-                            <span>C) x = -2, x = -3</span>
-                        </label>
-                        <label class="quiz-option">
-                            <input type="radio" name="quiz-answer" value="D">
-                            <span>D) x = 5, x = 6</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="section-divider"></div>
-                <button class="btn btn-primary" onclick="submitQuizAnswer()">✓ &nbsp; Submit Answer</button>
-                <button class="btn" onclick="closeDoorQuiz()">← &nbsp; Return to Game</button>
-            </div>
-        </div>
-
-        <div id="tutorial" class="overlay hidden">
-            <div class="pixel-panel" style="max-width:560px">
-                <div class="panel-bl">✦</div>
-                <div class="panel-br">✦</div>
-                <div class="panel-title">📜 How to Survive</div>
-                <div class="section-divider"></div>
-                <div style="text-align:left">
-                    <div class="key-binding">
-                        <div class="key-chip">W / D</div>
-                        <div class="key-desc">Walk <span>Forward</span></div>
-                    </div>
-                    <div class="key-binding">
-                        <div class="key-chip">A</div>
-                        <div class="key-desc">Walk <span>Backward</span></div>
-                    </div>
-                    <div class="key-binding">
-                        <div class="key-chip">Space</div>
-                        <div class="key-desc"><span>Jump</span></div>
-                    </div>
-                    <div class="key-binding">
-                        <div class="key-chip">Shift</div>
-                        <div class="key-desc"><span>Sprint</span></div>
-                    </div>
-                    <div class="key-binding">
-                        <div class="key-chip">P</div>
-                        <div class="key-desc"><span>Pause</span></div>
-                    </div>
-                </div>
-                <div class="section-divider"></div>
-                <p style="font-family:Cinzel,serif;font-size:0.8rem;color:var(--text-parchment);line-height:1.7;font-style:italic;margin-bottom:20px;">
-                    Reach the <span style="color:var(--gold-bright)">Golden Portal</span> to advance through rooms. In the final room, seek the <span style="color:var(--brown-light)">Ancient Door</span> and answer its riddle to proceed to the next realm. Fall into the void and lose a life. Lose all 3 and the labyrinth claims you.
-                </p>
-                <button class="btn" onclick="hidePanels()">← &nbsp; Back</button>
-            </div>
-        </div>
-
-        <div id="settings" class="overlay hidden">
-            <div class="pixel-panel" style="max-width:460px">
-                <div class="panel-bl">✦</div>
-                <div class="panel-br">✦</div>
-                <div class="panel-title">⚙ Settings</div>
-                <div class="section-divider"></div>
-                <div style="text-align:left;border:1px solid rgba(212,168,67,0.2);padding:16px;">
-                    <div class="settings-row">
-                        <span class="settings-label">Scanlines</span>
-                        <div class="toggle on" id="tog-scanlines" onclick="toggleSetting(this)"></div>
-                    </div>
-                    <div class="settings-row">
-                        <span class="settings-label">Difficulty</span>
-                        <span style="font-family:Cinzel,serif;font-size:0.75rem;color:var(--gold)">Normal</span>
-                    </div>
-                </div>
-                <div style="height:20px"></div>
-                <button class="btn" onclick="hidePanels()">← &nbsp; Back</button>
-            </div>
+        <div class="hud-panel hud-right">
+            <div class="hud-label">⏱ Time</div>
+            <div class="timer" id="timer">00:00</div>
         </div>
     </div>
 
-<script src="script.js"></script>
-<script src="sprite.js"></script>
+    <div id="hud-bottom" class="hidden">
+        <div class="ctrl-hint">[ W/D ] Move &nbsp; [ Space ] Jump &nbsp; [ Shift ] Sprint &nbsp; [ F ] Dash</div>
+        <button class="pause-btn" onclick="togglePause()">⏸ Pause [P]</button>
+    </div>
+
+    <div id="start-screen" class="overlay">
+        <div id="ember-container" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
+        <div class="start-logo-art">🏛️</div>
+        <div style="height:14px"></div>
+        <div class="title-main">LABYRINTH OF MINOS</div>
+        <div class="section-divider"></div>
+        <button class="btn btn-primary" onclick="SFX.menuClick();startGame()">▶ &nbsp; Enter the Maze</button>
+        <button class="btn" onclick="SFX.menuClick();showPanel('tutorial')">📖 &nbsp; How to Survive</button>
+        <button class="btn" onclick="SFX.menuClick();showPanel('settings')">⚙ &nbsp; Settings</button>
+        <div class="blink-text">— Press Enter to Begin —</div>
+    </div>
+
+    <div id="pause-menu" class="overlay hidden">
+        <div class="pixel-panel">
+            <div class="panel-bl">✦</div><div class="panel-br">✦</div>
+            <div class="pause-icon">⏸</div>
+            <div class="panel-title">— Paused —</div>
+            <div class="section-divider"></div>
+            <button class="btn btn-primary" onclick="SFX.menuClick();togglePause()">▶ &nbsp; Resume</button>
+            <button class="btn" onclick="SFX.menuClick();resetMaze()">↺ &nbsp; Restart Maze</button>
+            <button class="btn btn-danger" onclick="SFX.menuClick();returnToMenu()">⏹ &nbsp; Main Menu</button>
+        </div>
+    </div>
+
+    <div id="custom-alert" class="overlay hidden">
+        <div class="pixel-panel">
+            <div class="panel-bl">✦</div><div class="panel-br">✦</div>
+            <div id="alert-icon" class="alert-icon">💀</div>
+            <div id="alert-title">Notice</div>
+            <div class="section-divider"></div>
+            <p id="alert-message"></p>
+            <button class="btn btn-primary" onclick="SFX.menuClick();handleAlertConfirm()">↺ &nbsp; Try Again</button>
+        </div>
+    </div>
+
+    <div id="tutorial" class="overlay hidden">
+        <div class="pixel-panel" style="max-width:560px">
+            <div class="panel-bl">✦</div><div class="panel-br">✦</div>
+            <div class="panel-title">📜 How to Survive</div>
+            <div class="section-divider"></div>
+            <div style="text-align:left">
+                <div class="key-binding"><div class="key-chip">W / D</div><div class="key-desc">Walk <span>Forward</span></div></div>
+                <div class="key-binding"><div class="key-chip">A</div><div class="key-desc">Walk <span>Backward</span></div></div>
+                <div class="key-binding"><div class="key-chip">Space</div><div class="key-desc"><span>Jump</span></div></div>
+                <div class="key-binding"><div class="key-chip">Shift</div><div class="key-desc"><span>Sprint</span> — drains stamina</div></div>
+                <div class="key-binding"><div class="key-chip">F</div><div class="key-desc"><span>Dash</span> — burst forward, costs 30 stamina</div></div>
+                <div class="key-binding"><div class="key-chip">P</div><div class="key-desc"><span>Pause</span></div></div>
+            </div>
+            <div class="section-divider"></div>
+            <p style="font-family:Cinzel,serif;font-size:0.8rem;color:var(--text-parchment);line-height:1.7;font-style:italic;margin-bottom:20px;">
+                Reach the <span style="color:var(--gold-bright)">Golden Portal</span> to advance. Fall into the void and lose a life. Lose all 3 and the labyrinth claims you.
+            </p>
+            <button class="btn" onclick="SFX.menuClick();hidePanels()">← &nbsp; Back</button>
+        </div>
+    </div>
+
+    <div id="settings" class="overlay hidden">
+        <div class="pixel-panel" style="max-width:460px">
+            <div class="panel-bl">✦</div><div class="panel-br">✦</div>
+            <div class="panel-title">⚙ Settings</div>
+            <div class="section-divider"></div>
+            <div style="text-align:left;border:1px solid rgba(212,168,67,0.2);padding:16px;">
+                <div class="settings-row"><span class="settings-label">Scanlines</span><div class="toggle on" id="tog-scanlines" onclick="toggleSetting(this)"></div></div>
+                <div class="settings-row"><span class="settings-label">Difficulty</span><span style="font-family:Cinzel,serif;font-size:0.75rem;color:var(--gold)">Normal</span></div>
+            </div>
+            <div style="height:20px"></div>
+            <button class="btn" onclick="SFX.menuClick();hidePanels()">← &nbsp; Back</button>
+        </div>
+    </div>
+</div>
+
+    <script src="sprite.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
